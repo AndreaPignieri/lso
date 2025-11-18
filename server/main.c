@@ -5,25 +5,56 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <pthread.h>
+#include <unistd.h>
+
+#include "functions.h"
+
+#define TRUE 1
 
 int main()
 {
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in server_addr;
+    int sockFD = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in serverAddr;
 
 
-    if (sockfd < 0) 
+    if (sockFD < 0) 
     {
         perror("Socket creation failed"), exit(EXIT_FAILURE);
     }
 
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    server_addr.sin_port = htons(8080);
+    serverAddr.sin_family = AF_INET;
+    serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    serverAddr.sin_port = htons(8080);
     
-    if (bind(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) 
+    if (bind(sockFD, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) 
     {
-        perror("Bind failed"), exit(EXIT_FAILURE);
+        perror("Binding failed"), exit(EXIT_FAILURE);
+    }
+
+    if (listen(sockFD, 5) < 0) 
+    {
+        perror("Listening failed"), exit(EXIT_FAILURE);
+    }
+
+    while(TRUE)
+    {
+        int clientSocket;
+        struct sockaddr_in client_addr;
+        socklen_t client_len = sizeof(client_addr);
+
+        clientSocket = accept(sockFD, (struct sockaddr*)&client_addr, &client_len);
+        if (clientSocket < 0) 
+        {
+            perror("Accepting connection failed"), exit(EXIT_FAILURE);
+        }
+
+        pthread_t client_thread;
+        
+        if (pthread_create(&client_thread, NULL, clientHandler, (void*)&clientSocket) != 0) 
+        {
+            perror("Thread creation failed"), exit(EXIT_FAILURE);
+        }
     }
     
     return 0;
