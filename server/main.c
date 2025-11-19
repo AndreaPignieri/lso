@@ -17,11 +17,13 @@ int main()
     int sockFD = socket(AF_INET, SOCK_STREAM, 0);
     struct sockaddr_in serverAddr;
 
-
     if (sockFD < 0) 
     {
         perror("Socket creation failed"), exit(EXIT_FAILURE);
     }
+
+    int opt = 1;
+    setsockopt(sockFD, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -37,25 +39,31 @@ int main()
         perror("Listening failed"), exit(EXIT_FAILURE);
     }
 
-    while(TRUE)
-    {
-        int clientSocket;
-        struct sockaddr_in client_addr;
-        socklen_t client_len = sizeof(client_addr);
+    while (TRUE) {
+        struct sockaddr_in clientAddress;
+        socklen_t clientLength = sizeof(clientAddress);
 
-        clientSocket = accept(sockFD, (struct sockaddr*)&client_addr, &client_len);
-        if (clientSocket < 0) 
-        {
+        int clientSocket = accept(sockFD, (struct sockaddr*)&clientAddress, &clientLength);
+        
+        if (clientSocket < 0) {
             perror("Accepting connection failed"), exit(EXIT_FAILURE);
         }
 
-        pthread_t client_thread;
-        
-        if (pthread_create(&client_thread, NULL, clientHandler, (void*)&clientSocket) != 0) 
-        {
-            perror("Thread creation failed"), exit(EXIT_FAILURE);
+        int *clientSockPtr = malloc(sizeof(int));
+        if (!clientSockPtr) {
+            perror("malloc failed"), exit(EXIT_FAILURE);
         }
+        *clientSockPtr = clientSocket;
+
+        pthread_t clientThread;
+
+        if (pthread_create(&clientThread, NULL, clientHandler, (void*)clientSockPtr) != 0) {
+            perror("Thread creation failed"), free(clientSockPtr), exit(EXIT_FAILURE);
+        }
+
+        pthread_detach(clientThread);
     }
-    
+
+    close(sockFD);
     return 0;
 }
