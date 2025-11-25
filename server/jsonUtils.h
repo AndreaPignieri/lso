@@ -11,7 +11,10 @@ typedef struct {
     double openness;
 } personality;
 
-personality calculatePersonality(const char* jsonStr);
-//cJSON*  
+cJSON* processRequest(cJSON *request_json);
+cJSON* createErrorResponse(const char* message);
+cJSON* handleGreeting(int language);
+cJSON* handleTipiSubmission(cJSON *request_json);
+personality calculateTIPIPersonality(cJSON *responsesItem);
 
 #endif

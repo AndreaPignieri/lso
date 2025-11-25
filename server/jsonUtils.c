@@ -82,27 +82,17 @@ cJSON* englishTIPI()
 
 cJSON* handleTipiSubmission(cJSON *request_json) {
     cJSON *responsesItem = cJSON_GetObjectItemCaseSensitive(request_json, "responses");
-    
+
     if (!cJSON_IsArray(responsesItem) || cJSON_GetArraySize(responsesItem) != 10) {
         return createErrorResponse("Invalid or missing responses array");
     }
 
-    double responses[10];
-    for (int i = 0; i < 10; i++) {
-        cJSON *response = cJSON_GetArrayItem(responsesItem, i);
-        if (!cJSON_IsNumber(response)) {
-            return createErrorResponse("All responses must be numbers");
-        }
-        responses[i] = response->valuedouble;
+    personality p = calculateTIPIPersonality(responsesItem);
+
+    if (p.extraversion == -1) {
+        return createErrorResponse("Invalid response values");
     }
-
-    personality p;
-    p.extraversion = responses[0] + (8 - responses[5]);
-    p.agreeableness = (8 - responses[1]) + responses[6];
-    p.conscientiousness = responses[2] + (8 - responses[7]);
-    p.neuroticism = responses[3] + (8 - responses[8]);
-    p.openness = responses[4] + (8 - responses[9]);
-
+    
     cJSON *response = cJSON_CreateObject();
     cJSON_AddStringToObject(response, "status", "success");
     cJSON_AddNumberToObject(response, "extraversion", p.extraversion);
@@ -112,4 +102,31 @@ cJSON* handleTipiSubmission(cJSON *request_json) {
     cJSON_AddNumberToObject(response, "openness", p.openness);
 
     return response;
+}
+
+personality calculateTIPIPersonality(cJSON *responsesItem) 
+{
+    int answers[10];
+    for (int i = 0; i < 10; i++) {
+        cJSON *answerItem = cJSON_GetArrayItem(responsesItem, i);
+        if (!cJSON_IsNumber(answerItem)) {
+            personality invalid = {-1, -1, -1, -1, -1};
+            return invalid; 
+        }
+        answers[i] = answerItem->valueint;
+    }
+
+    personality p;
+    p.extraversion = (answers[0] + (8 - answers[5]));
+    p.agreeableness = ((8 - answers[1]) + answers[6]);
+    p.conscientiousness = (answers[2] + (8 - answers[7]));
+    p.neuroticism = (answers[3] + (8 - answers[8]));
+    p.openness = (answers[4] + (8 - answers[9]));
+
+    return p;
+}
+
+cJSON* modelPersonality(personality p) 
+{
+    // Choose what personality should the bot have based on the user's personality
 }
