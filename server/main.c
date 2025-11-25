@@ -8,7 +8,7 @@
 #include <pthread.h>
 #include <unistd.h>
 
-#include "functions.h"
+#include "clientHandler.h"
 
 #define TRUE 1
 
