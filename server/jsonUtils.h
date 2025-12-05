@@ -24,5 +24,8 @@ cJSON* createErrorResponse(const char* message);
 cJSON* handleGreeting(int language);
 cJSON* handleTipiSubmission(cJSON *request_json);
 personality calculateTIPIPersonality(cJSON *responsesItem);
+dialogueType determineDialogueType(personality p);
+int isHigh(double score);
+
 
 #endif
