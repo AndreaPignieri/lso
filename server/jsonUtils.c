@@ -126,7 +126,90 @@ personality calculateTIPIPersonality(cJSON *responsesItem)
     return p;
 }
 
+int dialogueHelper(personality p)
+{
+    dialogueType dialogue;
+    if(p.extraversion < 3.5 && p.agreeableness < 3.5 && p.neuroticism > 3.5)
+    {
+        return 0;
+    }
+    if(p.extraversion > 3.5 && p.agreeableness > 3.5 && p.neuroticism < 3.5)
+    {
+
+    }
+    
+}
+
 cJSON* modelPersonality(personality p) 
 {
-    // Choose what personality should the bot have based on the user's personality
+    //Choose what personality should the bot have based on the user's personality
+    //personalty scores go range from 1 to 7
+    cJSON *response = cJSON_CreateObject();
+    cJSON_AddStringToObject(response, "status", "success");
+    
+    if (p.extraversion < 3.5)
+    {
+        cJSON_AddStringToObject(response, "extraversion", "reserved");
+    }
+    else if (p.extraversion >= 3.5 && p.extraversion < 5.5)
+    {
+        cJSON_AddStringToObject(response, "extraversion", "balanced");
+    }
+    else 
+    {
+        cJSON_AddStringToObject(response, "extraversion", "outgoing");
+    }
+
+    if (p.agreeableness < 3.5)
+    {
+        cJSON_AddStringToObject(response, "agreeableness", "critical");
+    }
+    else if (p.agreeableness >= 3.5 && p.agreeableness < 5.5)
+    {
+        cJSON_AddStringToObject(response, "agreeableness", "balanced");
+    }
+    else 
+    {
+        cJSON_AddStringToObject(response, "agreeableness", "sympathetic");
+    }
+
+    if (p.conscientiousness < 3.5)
+    {
+        cJSON_AddStringToObject(response, "conscientiousness", "disorganized");
+    }
+    else if (p.conscientiousness >= 3.5 && p.conscientiousness < 5.5)
+    {
+        cJSON_AddStringToObject(response, "conscientiousness", "balanced");
+    }
+    else 
+    {
+        cJSON_AddStringToObject(response, "conscientiousness", "organized");
+    }
+
+    if (p.neuroticism < 3.5)
+    {
+        cJSON_AddStringToObject(response, "neuroticism", "calm");
+    }
+    else if (p.neuroticism >= 3.5 && p.neuroticism < 5.5)
+    {
+        cJSON_AddStringToObject(response, "neuroticism", "balanced");
+    }
+    else 
+    {
+        cJSON_AddStringToObject(response, "neuroticism", "anxious");
+    }
+
+    if (p.openness < 3.5)
+    {
+        cJSON_AddStringToObject(response, "openness", "conventional");
+    }
+    else if (p.openness >= 3.5 && p.openness < 5.5)
+    {
+        cJSON_AddStringToObject(response, "openness", "balanced");
+    }
+    else 
+    {
+        cJSON_AddStringToObject(response, "openness", "open-minded");
+    }
 }
+

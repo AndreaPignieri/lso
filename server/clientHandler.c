@@ -31,9 +31,7 @@ void clientHandler(void* socketPtr) {
         errorHandler(clientSocket, JSON_ERROR);
         return;
     }
-
     
-
     cJSON *response = processRequest(json);
     char *responseStr = cJSON_PrintUnformatted(response);
     send(clientSocket, responseStr, strlen(responseStr), 0);
