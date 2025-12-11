@@ -22,7 +22,7 @@ typedef enum
     NEUTRAL
 } dialogueType;
 
-int isValidPersonality(personality p);
+int isValid(personality p);
 personality calculateTIPIPersonality(cJSON *responsesItem);
 dialogueType determineDialogueType(personality p);
 

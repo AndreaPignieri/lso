@@ -1,11 +1,18 @@
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 
 #include "errors.h"
 #include "cJSON.h"
+#include "jsonUtils.h"
 #include "clientHandler.h"
 
-void clientHandler(void* socketPtr) {
+#define TRUE 1
+
+void *clientHandler(void* socketPtr) {
     int clientSocket = *((int*)socketPtr);
     free(socketPtr);
 
@@ -18,7 +25,7 @@ void clientHandler(void* socketPtr) {
     }
     else {
         errorHandler(clientSocket, DATA_RECEPTION_ERROR);
-        return;
+        return NULL;
     }
 
     cJSON *json = cJSON_Parse(buf);
@@ -29,14 +36,34 @@ void clientHandler(void* socketPtr) {
         }
         cJSON_Delete(json);
         errorHandler(clientSocket, JSON_ERROR);
-        return;
+        return NULL;
     }
     
     cJSON *response = processRequest(json);
+    if (response == NULL) {
+        cJSON_Delete(json);
+        errorHandler(clientSocket, REQUEST_PROCESSING_ERROR);
+        return NULL;
+    }
+    
+    //TODO: FIX ERROR HANDLING
+    cJSON *statusItem = cJSON_GetObjectItemCaseSensitive(response, "status");
+    if (cJSON_IsString(statusItem) && strcmp(statusItem->valuestring, "error") == 0) {
+        cJSON_Delete(json);
+        errorHandler(clientSocket, RESPONSE_CREATION_ERROR);
+        cJSON_Delete(response);
+        return NULL;
+    }
+
     char *responseStr = cJSON_PrintUnformatted(response);
+    if (responseStr == NULL) {
+        cJSON_Delete(response);
+        cJSON_Delete(json);
+        errorHandler(clientSocket, RESPONSE_CREATION_ERROR);
+        return NULL;
+    }
     send(clientSocket, responseStr, strlen(responseStr), 0);
-    
-    
+
 
     free(responseStr);
     cJSON_Delete(response);

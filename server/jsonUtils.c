@@ -1,9 +1,9 @@
+#include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-
+#include <string.h>
 #include "cJSON.h"
 #include "jsonUtils.h"
-#include "tipi.h"
+#include "tipi.h" 
 #include "errors.h"
 
 #define ITALIAN 1
@@ -25,12 +25,16 @@ cJSON* processRequest(cJSON *request_json) {
     }
 
     if (strcmp(typeItem->valuestring, "greeting") == 0) {
-        int language = cJSON_GetObjectItemCaseSensitive(request_json, "language");
+        cJSON *langItem = cJSON_GetObjectItemCaseSensitive(request_json, "language");
+        int language = 1; 
+        if (cJSON_IsNumber(langItem)) {
+            language = langItem->valueint;
+        }
         return handleGreeting(language);
     }
     else if (strcmp(typeItem->valuestring, "tipi_submission") == 0) {
         return handleTipiSubmission(request_json); 
-    } 
+    }
     return createErrorResponse("Unknown request type");
 }
 
@@ -42,6 +46,8 @@ cJSON* handleGreeting(int language) {
     else
         return createErrorResponse("Unsupported language");
 }
+
+//TODO refactor questions storage
 
 cJSON* italianTIPI()
 {
@@ -98,6 +104,9 @@ cJSON* handleTipiSubmission(cJSON *request_json) {
     return startDialogue(dType);
 }
 
+
+//TODO improve prompts
+
 cJSON* startDialogue(dialogueType dType) 
 {
     cJSON *response = cJSON_CreateObject();
@@ -133,4 +142,3 @@ cJSON* startDialogue(dialogueType dType)
     }
     return response;
 }
-
