@@ -49,8 +49,10 @@ void *clientHandler(void* socketPtr) {
     //TODO: FIX ERROR HANDLING
     cJSON *statusItem = cJSON_GetObjectItemCaseSensitive(response, "status");
     if (cJSON_IsString(statusItem) && strcmp(statusItem->valuestring, "error") == 0) {
+        cJSON *errorMessageItem = cJSON_GetObjectItemCaseSensitive(response, "message");
+        const char *errorMessage = cJSON_IsString(errorMessageItem) ? errorMessageItem->valuestring : "Unknown error";
         cJSON_Delete(json);
-        errorHandler(clientSocket, RESPONSE_CREATION_ERROR);
+        errorHandler(clientSocket, errorMessage);
         cJSON_Delete(response);
         return NULL;
     }
