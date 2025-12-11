@@ -3,11 +3,19 @@
 
 #include "cJSON.h"
 #include "jsonUtils.h"
+#include "tipi.h"
 #include "errors.h"
 
 #define ITALIAN 1
 #define ENGLISH 2
 
+
+cJSON* createErrorResponse(const char* message) {
+    cJSON *response = cJSON_CreateObject();
+    cJSON_AddStringToObject(response, "status", "error");
+    cJSON_AddStringToObject(response, "message", message);
+    return response;
+}
 
 cJSON* processRequest(cJSON *request_json) {
     cJSON *typeItem = cJSON_GetObjectItemCaseSensitive(request_json, "type");
@@ -24,13 +32,6 @@ cJSON* processRequest(cJSON *request_json) {
         return handleTipiSubmission(request_json); 
     } 
     return createErrorResponse("Unknown request type");
-}
-
-cJSON* createErrorResponse(const char* message) {
-    cJSON *response = cJSON_CreateObject();
-    cJSON_AddStringToObject(response, "status", "error");
-    cJSON_AddStringToObject(response, "message", message);
-    return response;
 }
 
 cJSON* handleGreeting(int language) {
@@ -89,61 +90,47 @@ cJSON* handleTipiSubmission(cJSON *request_json) {
 
     personality p = calculateTIPIPersonality(responsesItem);
 
-    if (p.extraversion == -1) {
+    if (!isValid(p)) {
         return createErrorResponse("Invalid response values");
     }
     
+    dialogueType dType = determineDialogueType(p);
+    return startDialogue(dType);
+}
+
+cJSON* startDialogue(dialogueType dType) 
+{
     cJSON *response = cJSON_CreateObject();
-    cJSON_AddStringToObject(response, "status", "success");
-    cJSON_AddNumberToObject(response, "extraversion", p.extraversion);
-    cJSON_AddNumberToObject(response, "agreeableness", p.agreeableness);
-    cJSON_AddNumberToObject(response, "conscientiousness", p.conscientiousness);
-    cJSON_AddNumberToObject(response, "neuroticism", p.neuroticism);
-    cJSON_AddNumberToObject(response, "openness", p.openness);
-
+    switch (dType) 
+    {
+        case NERVOUS:
+            cJSON_AddStringToObject(response, "status", "success");
+            cJSON_AddStringToObject(response, "prompt", "Act as a Robot interacting with a human. The human's personality has been calculated as Nervous. Use a calming and soothing vocabulary in your responses, ask about how he is doing and try to make him feel at ease.");
+            break;
+        case OPEN:
+            cJSON_AddStringToObject(response, "status", "success");
+            cJSON_AddStringToObject(response, "prompt", "Act as a Robot interacting with a human. The human's personality has been calculated as Open. Use an enthusiastic and engaging vocabulary in your responses, ask about his interests and try to stimulate an open conversation.");
+            break;
+        case RELAXED:
+            cJSON_AddStringToObject(response, "status", "success");
+            cJSON_AddStringToObject(response, "prompt", "Act as a Robot interacting with a human. The human's personality has been calculated as Relaxed. Use a friendly and easy-going vocabulary in your responses, keep the conversation light and enjoyable.");
+            break;
+        case SERIOUS:
+            cJSON_AddStringToObject(response, "status", "success");
+            cJSON_AddStringToObject(response, "prompt", "Act as a Robot interacting with a human. The human's personality has been calculated as Serious. Use a formal and respectful vocabulary in your responses, focus on meaningful topics and avoid small talk.");
+            break;
+        case TIMID:
+            cJSON_AddStringToObject(response, "status", "success");
+            cJSON_AddStringToObject(response, "prompt", "Act as a Robot interacting with a human. The human's personality has been calculated as Timid. Use a gentle and encouraging vocabulary in your responses, ask open-ended questions and try to build his confidence.");
+            break;
+        case NEUTRAL:
+            cJSON_AddStringToObject(response, "status", "success");
+            cJSON_AddStringToObject(response, "prompt", "Act as a Robot interacting with a human. The human's personality has been calculated as Neutral. Use a balanced and adaptable vocabulary in your responses, adjust your tone based on the flow of the conversation.");
+            break;
+        default:
+            createErrorResponse("Unknown dialogue type");
+            break;
+    }
     return response;
-}
-
-personality calculateTIPIPersonality(cJSON *responsesItem) 
-{
-    int answers[10];
-    for (int i = 0; i < 10; i++) {
-        cJSON *answerItem = cJSON_GetArrayItem(responsesItem, i);
-        if (!cJSON_IsNumber(answerItem)) {
-            personality invalid = {-1, -1, -1, -1, -1};
-            return invalid; 
-        }
-        answers[i] = answerItem->valueint;
-    }
-
-    personality p;
-    p.extraversion = (answers[0] + (8 - answers[5]));
-    p.agreeableness = ((8 - answers[1]) + answers[6]);
-    p.conscientiousness = (answers[2] + (8 - answers[7]));
-    p.neuroticism = (answers[3] + (8 - answers[8]));
-    p.openness = (answers[4] + (8 - answers[9]));
-
-    return p;
-}
-
-dialogueType determineDialogueType(personality p) 
-{
-    if (isHigh(p.neuroticism) && !isHigh(p.openness) && !isHigh(p.extraversion)) 
-    {
-        return NERVOUS;
-    }
-    if (isHigh(p.openness) && isHigh(p.extraversion))
-    {
-        return OPEN;
-    }
-    if (isHigh(p.agreeableness) && isHigh(p.conscientiousness) && !isHigh(p.neuroticism))
-    {
-        return RELAXED;
-    }
-}
-
-int isHigh(double score) 
-{
-    return score >= 3.5;
 }
 

@@ -1,31 +1,12 @@
-#include "cJSON.h"
-
 #ifndef JSON_UTILS_H
 #define JSON_UTILS_H
 
-typedef struct
-{
-    double extraversion;
-    double agreeableness;
-    double conscientiousness;
-    double neuroticism;
-    double openness;
-} personality;
-
-typedef enum
-{
-    NERVOUS,
-    OPEN,
-    RELAXED
-} dialogueType;
+#include "cJSON.h"
 
 cJSON* processRequest(cJSON *request_json);
 cJSON* createErrorResponse(const char* message);
 cJSON* handleGreeting(int language);
-cJSON* handleTipiSubmission(cJSON *request_json);
-personality calculateTIPIPersonality(cJSON *responsesItem);
-dialogueType determineDialogueType(personality p);
-int isHigh(double score);
-
+cJSON* italianTIPI();
+cJSON* englishTIPI();
 
 #endif
