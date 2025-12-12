@@ -124,27 +124,27 @@ cJSON* startDialogue(dialogueType dType)
     {
         case NERVOUS:
             cJSON_AddStringToObject(response, "status", "success");
-            cJSON_AddStringToObject(response, "prompt", "Act as a Robot interacting with a human. The human's personality has been calculated as Nervous. Use a calming and soothing vocabulary in your responses, ask about how he is doing and try to make him feel at ease.");
+            cJSON_AddStringToObject(response, "config", "Act as a Robot interacting with a human. The human's personality has been calculated as Nervous. Use a calming and soothing vocabulary in your responses, ask about how he is doing and try to make him feel at ease.");
             break;
         case OPEN:
             cJSON_AddStringToObject(response, "status", "success");
-            cJSON_AddStringToObject(response, "prompt", "Act as a Robot interacting with a human. The human's personality has been calculated as Open. Use an enthusiastic and engaging vocabulary in your responses, ask about his interests and try to stimulate an open conversation.");
+            cJSON_AddStringToObject(response, "config", "Act as a Robot interacting with a human. The human's personality has been calculated as Open. Use an enthusiastic and engaging vocabulary in your responses, ask about his interests and try to stimulate an open conversation.");
             break;
         case RELAXED:
             cJSON_AddStringToObject(response, "status", "success");
-            cJSON_AddStringToObject(response, "prompt", "Act as a Robot interacting with a human. The human's personality has been calculated as Relaxed. Use a friendly and easy-going vocabulary in your responses, keep the conversation light and enjoyable.");
+            cJSON_AddStringToObject(response, "config", "Act as a Robot interacting with a human. The human's personality has been calculated as Relaxed. Use a friendly and easy-going vocabulary in your responses, keep the conversation light and enjoyable.");
             break;
         case SERIOUS:
             cJSON_AddStringToObject(response, "status", "success");
-            cJSON_AddStringToObject(response, "prompt", "Act as a Robot interacting with a human. The human's personality has been calculated as Serious. Use a formal and respectful vocabulary in your responses, focus on meaningful topics and avoid small talk.");
+            cJSON_AddStringToObject(response, "config", "Act as a Robot interacting with a human. The human's personality has been calculated as Serious. Use a formal and respectful vocabulary in your responses, focus on meaningful topics and avoid small talk.");
             break;
         case TIMID:
             cJSON_AddStringToObject(response, "status", "success");
-            cJSON_AddStringToObject(response, "prompt", "Act as a Robot interacting with a human. The human's personality has been calculated as Timid. Use a gentle and encouraging vocabulary in your responses, ask open-ended questions and try to build his confidence.");
+            cJSON_AddStringToObject(response, "config", "Act as a Robot interacting with a human. The human's personality has been calculated as Timid. Use a gentle and encouraging vocabulary in your responses, ask open-ended questions and try to build his confidence.");
             break;
         case NEUTRAL:
             cJSON_AddStringToObject(response, "status", "success");
-            cJSON_AddStringToObject(response, "prompt", "Act as a Robot interacting with a human. The human's personality has been calculated as Neutral. Use a balanced and adaptable vocabulary in your responses, adjust your tone based on the flow of the conversation.");
+            cJSON_AddStringToObject(response, "config", "Act as a Robot interacting with a human. The human's personality has been calculated as Neutral. Use a balanced and adaptable vocabulary in your responses, adjust your tone based on the flow of the conversation.");
             break;
         default:
             createErrorResponse("Unknown dialogue type");

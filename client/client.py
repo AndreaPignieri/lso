@@ -2,13 +2,15 @@ import socket
 import json
 import sys
 import logging
+from assistant import Assistant
 from furhat_realtime_api import FurhatClient
 
 SERVER_IP = "127.0.0.1"
 SERVER_PORT = 8080
 
 
-
+#TO DO : FAI IN MODO CHE OGNI MESSAGGIO PASSI DALL'IA PRIMA DI ESSERE PARLATO DA FURHAT
+#GESTISCI LE DOMANDE DEL TIPI IN MODO DA FARLE UNA ALLA VOLTA E ASPETTARE LA RISPOSTA PRIMA DI ANDARE AVANTI
 
 def main():
     try:
@@ -23,9 +25,17 @@ def main():
         request = askTipi(furhat)
         response = sendAndReceive(clientSocket, request)
 
-        print("Risposta dal server:", response)
+        assistant = Assistant(response.get("config", {}))
 
-        
+        while True:
+            userInput = furhat.listen_for_user_input()
+            assistantResponse = assistant.getResponse(userInput)
+            if assistantResponse.contains("end_conversation"):
+                furhat.request_speak_text("Thank you for your time. Goodbye!")
+                break
+            else:
+                furhat.request_speak_text(assistantResponse)
+
 
     except Exception as e:
         print(f"Errore: {e}")
