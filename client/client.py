@@ -15,8 +15,8 @@ SERVER_PORT = 8080
 def main():
     try:
         furhat = connectToFurhat()
-        
-        request = askLanguage(furhat)
+
+        request = getQuestions()
         response = connectAndSend(request)
         request = askTipi(furhat, response)
         response = connectAndSend(request)
@@ -72,41 +72,40 @@ def connectToFurhat():
     furhat.request_speak_text("Hello world, I am Furhat.")
     return furhat
 
+def getQuestions():
+    return {"type": "get_questions"}
 
-#TO DO : IMPLEMENTARE IL RICONOSCIMENTO DELLA LINGUA DA PARTE DI FURHAT
-def askLanguage(furhat):
-    furhat.request_speak_text("Which language would you like to speak?")
-    #language = furhat.listen_for_language_choice()
-    language = "english"  # for testing purposes
-    request = {}
-    if language == "italian":
-        request = { "type": 'set_language', "language": "it" }
-    if language == "english":
-        request = { "type": 'set_language', "language": "en" }
-    return request
-
-def performTipiTest(furhat, response):
+def askTipi(furhat, response):
+    questions = response.get("questions", [])
     scores = []
-    furhat.say("I need to ask you 10 questions. Please answer with a number from 1 to 7.")
-    
-    for i, question in enumerate(response.get("questions", [])):
-        furhat.say(f"Question {i+1}. {question}")
-        
-        # PER ORA: Usiamo input tastiera per testare velocemente la logica
-        # (Il riconoscimento vocale dei numeri è lento e prono a errori senza grammatiche)
-        while True:
-            try:
-                val = int(input(f"Voto per '{question}' (1-7): "))
-                if 1 <= val <= 7:
-                    scores.append(val)
-                    furhat.gesture(name="Blink") # Feedback visivo
-                    break
-                print("Inserisci un numero tra 1 e 7.")
-            except ValueError:
-                print("Numero non valido.")
-                
-    return scores
+    furhat.request_speak_text(f"I have {len(questions)} questions. You can answer naturally.")
 
+    for i, q_text in enumerate(questions):
+        # Continua a chiedere la stessa domanda finché non ottiene una risposta valida
+        while True:
+            # Domanda
+            furhat.request_speak_text(f"Question {i+1}. {q_text}")
+            
+            # Ascolto
+            user_audio_text = furhat.request_listen_start()
+            print(f"Input ricevuto per domanda {i+1}: {user_audio_text}")
+            
+            if not user_audio_text:
+                furhat.request_speak_text("I didn't hear you.")
+                continue
+
+            # Parsing con AI (converte testo -> numero)
+            score = parser_ai.parse_tipi_score(str(user_audio_text), q_text)
+            
+            if score is not None and 1 <= score <= 7:
+                scores.append(score)
+                # Feedback (Gesto rapido per confermare)
+                furhat.request_gesture("Blink") 
+                break
+            else:
+                furhat.request_speak_text("I didn't understand. Please say a number or answer yes or no.")
+
+    return { "type": "tipi_submission", "scores": scores }
 
 if __name__ == "__main__":
     main()

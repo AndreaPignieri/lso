@@ -22,29 +22,13 @@ cJSON* processRequest(cJSON *request_json)
     if (!cJSON_IsString(typeItem)) {
         return createErrorResponse("Missing or invalid request type");
     }
-
-    if (strcmp(typeItem->valuestring, "set_language") == 0) {
-        cJSON *langItem = cJSON_GetObjectItemCaseSensitive(request_json, "language");
-        char *language = "en";
-        if (cJSON_IsString(langItem)) {
-            language = langItem->valuestring;
-        }
-        return handleLanguage(language);
+    if (strcmp(typeItem->valuestring, "get_questions") == 0) {
+        return italianTIPI(); 
     }
     else if (strcmp(typeItem->valuestring, "tipi_submission") == 0) {
         return handleTipiSubmission(request_json); 
     }
     return createErrorResponse("Unknown request type");
-}
-
-
-cJSON* handleLanguage(char *language) 
-{
-    if (strcmp(language, "it") == 0) {
-        return italianTIPI();
-    } else {
-        return englishTIPI();
-    }
 }
 
 //TODO refactor questions storage
@@ -70,30 +54,6 @@ cJSON* italianTIPI()
     cJSON_AddItemToArray(questions, cJSON_CreateString("9. Sono una persona tranquilla, emotivamente stabile."));
     cJSON_AddItemToArray(questions, cJSON_CreateString("10. Sono una persona tradizionalista, abitudinaria."));
     
-    return response;
-}
-
-cJSON* englishTIPI()
-{
-    cJSON *response = cJSON_CreateObject();
-    
-    cJSON_AddStringToObject(response, "status", "success");
-    cJSON_AddStringToObject(response, "message", "Here are your instructions for the TIPI test: Answer the 10 questions with a score from 1 to 7, where 1 means 'strongly disagree' and 7 means 'strongly agree'.");
-    
-    cJSON *questions = cJSON_AddArrayToObject(response, "questions");
-    
-    cJSON_AddItemToArray(questions, cJSON_CreateString("1. I see myself as extraverted, enthusiastic."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("2. I see myself as critical, quarrelsome."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("3. I see myself as dependable, self-disciplined."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("4. I see myself as anxious, easily upset."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("5. I see myself as open to new experiences, complex."));
-    
-    cJSON_AddItemToArray(questions, cJSON_CreateString("6. I see myself as reserved, quiet.")); 
-    cJSON_AddItemToArray(questions, cJSON_CreateString("7. I see myself as sympathetic, warm."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("8. I see myself as disorganized, careless."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("9. I see myself as calm, emotionally stable."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("10. I see myself as conventional, uncreative."));
-
     return response;
 }
 
