@@ -6,3 +6,22 @@ services:
     container_name: robot_server
     ports:
       - "8080:8080"
+    networks:
+      - robot_net
+  client_python:
+    build: ./client
+    container_name: robot_client
+    extra_hosts:
+      - "host.docker.internal:host-gateway" 
+    environment:
+      - SERVER_IP=server_c
+      - FURHAT_IP=host.docker.internal
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      - server_c
+    networks:
+      - robot_net
+
+networks:
+  robot_net:
+    driver: bridge
