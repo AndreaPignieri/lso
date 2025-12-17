@@ -58,21 +58,22 @@ def connectAndSend(request):
     """
     Connects to the server, sends a JSON request, and returns the JSON response.
     """
-    # Create the socket using a context manager to ensure it closes automatically
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
         client_socket.connect((SERVER_IP, SERVER_PORT))
-        
-        # Serialize and send
         client_socket.sendall(json.dumps(request).encode('utf-8'))
-
-        # Receive and deserialize
-        # Note: This assumes the response fits in 4096 bytes
-        response_data = client_socket.recv(4096)
+        response = client_socket.recv(4096)
         
-        return json.loads(response_data.decode('utf-8'))
+        if not response:
+            raise Exception("Nessuna risposta dal server.")
+        
+        if response.get("status") == "error":
+            raise Exception(f"Errore dal server: {response.get('message', 'Nessun messaggio di errore fornito')}")
+
+        return json.loads(response.decode('utf-8'))
 
 def connectToFurhat():
     furhat = FurhatClient("127.0.0.1")
+    furhat.request_voice_config(language="it")
     furhat.set_logging_level(logging.INFO)
     furhat.connect()
     return furhat
