@@ -38,7 +38,7 @@ cJSON* italianTIPI()
     cJSON *response = cJSON_CreateObject();
     
     cJSON_AddStringToObject(response, "status", "success");
-    cJSON_AddStringToObject(response, "message", "Ecco le tue istruzioni per il test TIPI: Rispondi alle 10 domande con un punteggio da 1 a 7, dove 1 significa 'fortemente in disaccordo' e 7 significa 'fortemente d'accordo'.");
+    cJSON_AddStringToObject(response, "message", "Adesso ti farò delle domande per valutare la tua personalità : rispondi alle 10 domande con un punteggio da 1 a 7, dove 1 significa 'fortemente in disaccordo' e 7 significa 'fortemente d'accordo'.");
     
     cJSON *questions = cJSON_AddArrayToObject(response, "questions");
     
