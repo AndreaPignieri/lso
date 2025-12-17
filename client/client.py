@@ -9,9 +9,6 @@ SERVER_IP = "127.0.0.1"
 SERVER_PORT = 8080
 
 
-#TO DO : FAI IN MODO CHE OGNI MESSAGGIO PASSI DALL'IA PRIMA DI ESSERE PARLATO DA FURHAT
-#GESTISCI LE DOMANDE DEL TIPI IN MODO DA FARLE UNA ALLA VOLTA E ASPETTARE LA RISPOSTA PRIMA DI ANDARE AVANTI
-
 def main():
     try:
         furhat = connectToFurhat()
@@ -21,20 +18,29 @@ def main():
         request = askTipi(furhat, response)
         response = connectAndSend(request)
 
-        assistant = Assistant(response.get("config", {}))
+        assistant = Assistant(mode="persona", personality=response.get("config", {}))
 
         while True:
             userInput = furhat.request_listen_start()
+            
+            if not userInput:
+                continue
+
             assistantResponse = assistant.getResponse(userInput)
-            textToSpeak = assistantResponse.get("text", "I didn't understand that.")
+            
+            textToSpeak = assistantResponse.get("text", "Non ho capito bene, puoi ripetere?")
             gestureToPerform = assistantResponse.get("gesture", None)
+            
             if assistantResponse.get("end_conversation") == True:
-                furhat.request_speak_text("Thank you for your time. Goodbye!")
+                furhat.request_speak_text("Grazie per la conversazione. Arrivederci!")
                 break
             else:
                 furhat.request_speak_text(textToSpeak)
-                if gestureToPerform:
-                    furhat.request_gesture(gestureToPerform)
+                if gestureToPerform and gestureToPerform != "None":
+                    try:
+                        furhat.request_gesture(gestureToPerform)
+                    except Exception as e:
+                        print(f"Gesto fallito: {e}")
 
 
     except Exception as e:
@@ -69,7 +75,6 @@ def connectToFurhat():
     furhat = FurhatClient("127.0.0.1")
     furhat.set_logging_level(logging.INFO)
     furhat.connect()
-    furhat.request_speak_text("Hello world, I am Furhat.")
     return furhat
 
 def getQuestions():
@@ -78,32 +83,27 @@ def getQuestions():
 def askTipi(furhat, response):
     questions = response.get("questions", [])
     scores = []
-    furhat.request_speak_text(f"I have {len(questions)} questions. You can answer naturally.")
+    furhat.request_speak_text(response.get("message"))
+    parser_ai = Assistant(mode="parser")
 
     for i, q_text in enumerate(questions):
-        # Continua a chiedere la stessa domanda finché non ottiene una risposta valida
         while True:
-            # Domanda
             furhat.request_speak_text(f"Question {i+1}. {q_text}")
-            
-            # Ascolto
             user_audio_text = furhat.request_listen_start()
             print(f"Input ricevuto per domanda {i+1}: {user_audio_text}")
             
             if not user_audio_text:
-                furhat.request_speak_text("I didn't hear you.")
+                furhat.request_speak_text("Non ho sentito nulla. Per favore ripeti la tua risposta.")
                 continue
-
-            # Parsing con AI (converte testo -> numero)
+            
             score = parser_ai.parse_tipi_score(str(user_audio_text), q_text)
             
             if score is not None and 1 <= score <= 7:
                 scores.append(score)
-                # Feedback (Gesto rapido per confermare)
                 furhat.request_gesture("Blink") 
                 break
             else:
-                furhat.request_speak_text("I didn't understand. Please say a number or answer yes or no.")
+                furhat.request_speak_text("Non ho capito la tua risposta. Per favore rispondi con un numero da 1 a 7.")
 
     return { "type": "tipi_submission", "scores": scores }
 
