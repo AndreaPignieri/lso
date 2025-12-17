@@ -8,5 +8,6 @@ cJSON* processRequest(cJSON *request_json);
 cJSON* createErrorResponse(const char* message);
 cJSON* handleTipiSubmission(cJSON *request_json);
 cJSON* startDialogue(dialogueType dType);
+cJSON* italianTIPI();
 
 #endif

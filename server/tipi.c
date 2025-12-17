@@ -1,11 +1,11 @@
 #include "tipi.h"
 
 int isValid(personality p) {
-    if (p.extraversion < 1 || p.extraversion > 7) return 0;
-    if (p.agreeableness < 1 || p.agreeableness > 7) return 0;
-    if (p.conscientiousness < 1 || p.conscientiousness > 7) return 0;
-    if (p.neuroticism < 1 || p.neuroticism > 7) return 0;
-    if (p.openness < 1 || p.openness > 7) return 0;
+    if (p.extraversion < 0.5 || p.extraversion > 7.5) return 0;
+    if (p.agreeableness < 0.5 || p.agreeableness > 7.5) return 0;
+    if (p.conscientiousness < 0.5 || p.conscientiousness > 7.5) return 0;
+    if (p.neuroticism < 0.5 || p.neuroticism > 7.5) return 0;
+    if (p.openness < 0.5 || p.openness > 7.5) return 0;
     return 1;
 }
 

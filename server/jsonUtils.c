@@ -58,7 +58,7 @@ cJSON* italianTIPI()
 }
 
 cJSON* handleTipiSubmission(cJSON *request_json) {
-    cJSON *responsesItem = cJSON_GetObjectItemCaseSensitive(request_json, "responses");
+    cJSON *responsesItem = cJSON_GetObjectItemCaseSensitive(request_json, "scores");
 
     if (!cJSON_IsArray(responsesItem) || cJSON_GetArraySize(responsesItem) != 10) {
         return createErrorResponse("Invalid or missing responses array");
