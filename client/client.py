@@ -1,23 +1,32 @@
 import socket
 import json
-import sys
+import os
 import logging
 from assistant import Assistant
 from furhat_realtime_api import FurhatClient
 
-SERVER_IP = "127.0.0.1"
-SERVER_PORT = 8080
-
+FURHAT_IP = os.getenv("FURHAT_IP", "host.docker.internal")
+SERVER_IP = os.getenv("SERVER_IP", "server_c")
+SERVER_PORT = int(os.getenv("SERVER_PORT", 8080))
 
 def main():
+    furhat = None
     try:
+        print(f"--- Tentativo di connessione a Furhat su {FURHAT_IP} ---")
         furhat = connectToFurhat()
+        print("--- Connessione a Furhat riuscita! ---")
 
+        print("--- Richiesta domande al server locale... ---")
         request = getQuestions()
         response = connectAndSend(request)
+        
+        print("--- Inizio intervista TIPI ---")
         request = askTipi(furhat, response)
+        
+        print("--- Invio risultati al server... ---")
         response = connectAndSend(request)
 
+        print("--- Avvio Assistente ---")
         assistant = Assistant(mode="persona", personality=response.get("config", {}))
 
         while True:
@@ -42,61 +51,75 @@ def main():
                     except Exception as e:
                         print(f"Gesto fallito: {e}")
 
-
     except Exception as e:
-        print(f"Errore: {e}")
+        print(f"Dettaglio errore: {e}")
     finally:
         furhatShutdown(furhat)
-        print("Connessione chiusa.")
+        print("Programma terminato.")
 
 def furhatShutdown(furhat):
+    """Chiude la connessione con il robot in modo sicuro."""
     if furhat:
-        furhat.disconnect()
-
+        try:
+            furhat.disconnect()
+            print("Disconnessione da Furhat completata.")
+        except:
+            pass
 
 def connectAndSend(request):
-    """
-    Connects to the server, sends a JSON request, and returns the JSON response.
-    """
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
-        client_socket.connect((SERVER_IP, SERVER_PORT))
-        client_socket.sendall(json.dumps(request).encode('utf-8'))
-        response = client_socket.recv(4096)
-        
-        if not response:
-            raise Exception("Nessuna risposta dal server.")
-        
-        if response.get("status") == "error":
-            raise Exception(f"Errore dal server: {response.get('message', 'Nessun messaggio di errore fornito')}")
-
-        return json.loads(response.decode('utf-8'))
+    """Gestisce la comunicazione socket con il server Python locale."""
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
+            client_socket.settimeout(5) 
+            client_socket.connect((SERVER_IP, SERVER_PORT))
+            
+            client_socket.sendall(json.dumps(request).encode('utf-8'))
+            response_bytes = client_socket.recv(4096)
+            
+            if not response_bytes:
+                raise Exception("Il server ha risposto con dati vuoti.")
+            response_str = response_bytes.decode('utf-8')
+            response_json = json.loads(response_str)
+            if response_json.get("status") == "error":
+                raise Exception(f"Errore dal server: {response_json.get('message', 'Nessun messaggio')}")
+            return response_json
+    except ConnectionRefusedError:
+        raise Exception(f"Impossibile connettersi al server locale su {SERVER_IP}:{SERVER_PORT}. Assicurati che sia avviato.")
+    except json.JSONDecodeError:
+        raise Exception("Il server ha risposto, ma non era un JSON valido.")
 
 def connectToFurhat():
-    furhat = FurhatClient("127.0.0.1")
-    furhat.request_voice_config(language="it")
+    """Configura e connette il client Furhat."""
+    furhat = FurhatClient(FURHAT_IP)
     furhat.set_logging_level(logging.INFO)
     furhat.connect()
+    furhat.request_voice_config(language="it")
     return furhat
 
 def getQuestions():
+    """Crea il payload per richiedere le domande al server."""
     return {"type": "get_questions"}
 
 def askTipi(furhat, response):
+    """Gestisce il ciclo di domande e risposte del test TIPI."""
     questions = response.get("questions", [])
     scores = []
-    furhat.request_speak_text(response.get("message"))
+    
+    message = response.get("message", "Iniziamo il test.")
+    furhat.request_speak_text(message)
+
     parser_ai = Assistant(mode="parser")
 
     for i, q_text in enumerate(questions):
         while True:
-            furhat.request_speak_text(f"Question {i+1}. {q_text}")
+            furhat.request_speak_text(f"Domanda {i+1}. {q_text}")
             user_audio_text = furhat.request_listen_start()
             print(f"Input ricevuto per domanda {i+1}: {user_audio_text}")
-            
+
             if not user_audio_text:
-                furhat.request_speak_text("Non ho sentito nulla. Per favore ripeti la tua risposta.")
+                furhat.request_speak_text("Non ho sentito nulla. Per favore ripeti.")
                 continue
-            
+
             score = parser_ai.parse_tipi_score(str(user_audio_text), q_text)
             
             if score is not None and 1 <= score <= 7:
@@ -104,7 +127,7 @@ def askTipi(furhat, response):
                 furhat.request_gesture("Blink") 
                 break
             else:
-                furhat.request_speak_text("Non ho capito la tua risposta. Per favore rispondi con un numero da 1 a 7.")
+                furhat.request_speak_text("Non ho capito. Rispondi con un numero da 1 a 7.")
 
     return { "type": "tipi_submission", "scores": scores }
 
