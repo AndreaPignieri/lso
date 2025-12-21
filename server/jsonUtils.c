@@ -84,27 +84,33 @@ cJSON* startDialogue(dialogueType dType)
     {
         case NERVOUS:
             cJSON_AddStringToObject(response, "status", "success");
-            cJSON_AddStringToObject(response, "config", "Act as a Robot interacting with a human. The human's personality has been calculated as Nervous. Use a calming and soothing vocabulary in your responses, ask about how he is doing and try to make him feel at ease.");
+            cJSON_AddStringToObject(response, "config", "Comportati come un robot che interagisce con un essere umano. La personalità dell'umano è stata calcolata come Nervosa. Usa un vocabolario calmante e rassicurante nelle tue risposte, chiedigli come sta e cerca di farlo sentire a suo agio.");
+            cJSON_AddStringToObject(response, "toSpeak", "La tua personalità è stata classificata come Nervosa. Cercherò di rendere questa conversazione il più piacevole possibile per te!");
             break;
         case OPEN:
             cJSON_AddStringToObject(response, "status", "success");
-            cJSON_AddStringToObject(response, "config", "Act as a Robot interacting with a human. The human's personality has been calculated as Open. Use an enthusiastic and engaging vocabulary in your responses, ask about his interests and try to stimulate an open conversation.");
+            cJSON_AddStringToObject(response, "config", "Comportati come un robot che interagisce con un essere umano. La personalità dell'umano è stata calcolata come Aperta. Usa un vocabolario entusiasta e coinvolgente nelle tue risposte, chiedigli dei suoi interessi e cerca di stimolare una conversazione aperta.");
+            cJSON_AddStringToObject(response, "toSpeak", "La tua personalità è stata classificata come Aperta. Non vedo l'ora di conoscere i tuoi interessi!");
             break;
         case RELAXED:
             cJSON_AddStringToObject(response, "status", "success");
-            cJSON_AddStringToObject(response, "config", "Act as a Robot interacting with a human. The human's personality has been calculated as Relaxed. Use a friendly and easy-going vocabulary in your responses, keep the conversation light and enjoyable.");
+            cJSON_AddStringToObject(response, "config", "Comportati come un robot che interagisce con un essere umano. La personalità dell'umano è stata calcolata come Rilassata. Usa un vocabolario amichevole e facile da gestire nelle tue risposte, mantieni la conversazione leggera e piacevole.");
+            cJSON_AddStringToObject(response, "toSpeak", "La tua personalità è stata classificata come Rilassata. Cercherò di rendere questa conversazione il più piacevole possibile per te!");
             break;
         case SERIOUS:
             cJSON_AddStringToObject(response, "status", "success");
-            cJSON_AddStringToObject(response, "config", "Act as a Robot interacting with a human. The human's personality has been calculated as Serious. Use a formal and respectful vocabulary in your responses, focus on meaningful topics and avoid small talk.");
+            cJSON_AddStringToObject(response, "config", "Comportati come un robot che interagisce con un essere umano. La personalità dell'umano è stata calcolata come Seria. Usa un vocabolario formale e rispettoso nelle tue risposte, concentra l'attenzione su argomenti significativi e evita chiacchere.");
+            cJSON_AddStringToObject(response, "toSpeak", "La tua personalità è stata classificata come Seria. Cercherò di rendere questa conversazione il più piacevole possibile per te!");
             break;
         case TIMID:
             cJSON_AddStringToObject(response, "status", "success");
-            cJSON_AddStringToObject(response, "config", "Act as a Robot interacting with a human. The human's personality has been calculated as Timid. Use a gentle and encouraging vocabulary in your responses, ask open-ended questions and try to build his confidence.");
+            cJSON_AddStringToObject(response, "config", "Comportati come un robot che interagisce con un essere umano. La personalità dell'umano è stata calcolata come Timida. Usa un vocabolario gentile e incoraggiante nelle tue risposte, fai domande aperte e cerca di costruire la sua fiducia.");
+            cJSON_AddStringToObject(response, "toSpeak", "La tua personalità è stata classificata come Timida. Cercherò di rendere questa conversazione il più piacevole possibile per te!");
             break;
         case NEUTRAL:
             cJSON_AddStringToObject(response, "status", "success");
-            cJSON_AddStringToObject(response, "config", "Act as a Robot interacting with a human. The human's personality has been calculated as Neutral. Use a balanced and adaptable vocabulary in your responses, adjust your tone based on the flow of the conversation.");
+            cJSON_AddStringToObject(response, "config", "Comportati come un robot che interagisce con un essere umano. La personalità dell'umano è stata calcolata come Neutra. Usa un vocabolario bilanciato e adattabile nelle tue risposte, adatta il tuo tono in base al flusso della conversazione.");
+            cJSON_AddStringToObject(response, "toSpeak", "La tua personalità è stata classificata come Neutra. Cercherò di rendere questa conversazione il più piacevole possibile per te!");
             break;
         default:
             createErrorResponse("Unknown dialogue type");

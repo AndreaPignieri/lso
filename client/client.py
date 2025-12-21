@@ -30,6 +30,7 @@ def main():
 
         print("--- Avvio Assistente ---")
         assistant = Assistant(mode="persona", personality=response.get("config", {}))
+        furhat.request_speak_text(response.get("toSpeak", "Iniziamo la conversazione."))
 
         while True:
             userInput = furhat.request_listen_start()
