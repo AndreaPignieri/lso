@@ -16,6 +16,8 @@ def main():
         furhat = connectToFurhat()
         print("--- Connessione a Furhat riuscita! ---")
 
+        goodMorning(furhat)
+
         print("--- Richiesta domande al server locale... ---")
         request = getQuestions()
         response = connectAndSend(request)
@@ -53,6 +55,7 @@ def main():
 
     except Exception as e:
         print(f"Dettaglio errore: {e}")
+        furhat.request_speak_text("Mi dispiace, si è verificato un errore. Termino il programma.")
     finally:
         furhatShutdown(furhat)
         print("Programma terminato.")
@@ -61,10 +64,17 @@ def furhatShutdown(furhat):
     """Chiude la connessione con il robot in modo sicuro."""
     if furhat:
         try:
+            furhat.request_speak_text("Sto chiudendo la connessione. A presto!")
             furhat.disconnect()
             print("Disconnessione da Furhat completata.")
         except:
             pass
+
+def goodMorning(furhat):
+    furhat.request_speak_text("Ciao! Sono Furhat, il tuo assistente virtuale, sei pronto per iniziare?")
+    response = furhat.request_listen_start()
+    if response:
+        furhat.request_speak_text("Perfetto! Iniziamo la conversazione.")
 
 def connectAndSend(request):
     """Gestisce la comunicazione socket con il server Python locale."""
@@ -94,6 +104,7 @@ def connectToFurhat():
     furhat.set_logging_level(logging.INFO)
     furhat.connect()
     furhat.request_voice_config(language="it")
+    furhat.request_attend_user("closest")
     return furhat
 
 def getQuestions():
@@ -112,7 +123,7 @@ def askTipi(furhat, response):
 
     for i, q_text in enumerate(questions):
         while True:
-            furhat.request_speak_text(f"Domanda {i+1}. {q_text}")
+            furhat.request_speak_text(f"Domanda numero {i+1}. {q_text}")
             user_audio_text = furhat.request_listen_start()
             print(f"Input ricevuto per domanda {i+1}: {user_audio_text}")
 
@@ -124,7 +135,7 @@ def askTipi(furhat, response):
             
             if score is not None and 1 <= score <= 7:
                 scores.append(score)
-                furhat.request_gesture("Blink") 
+                furhat.request_gesture_start("Blink") 
                 break
             else:
                 furhat.request_speak_text("Non ho capito. Rispondi con un numero da 1 a 7.")
