@@ -256,7 +256,7 @@ Il modello non ha accesso diretto al robot, ma produce un output strutturato int
 
 La comunicazione client-server avviene tramite messaggi JSON.
 
-### 7.1 Esempio di messaggio client → server
+### 7.1 Esempio di messaggio client -> server
 
 ```JSON
 {
@@ -271,13 +271,13 @@ La comunicazione client-server avviene tramite messaggi JSON.
 }
 ```
 
-### 7.2 Esempio di risposta server → client
+### 7.2 Esempio di risposta server -> client
 
 ```JSON
 {
-  "behavior": "introvert_calm",
-  "dialog_strategy": "soft_smalltalk",
-  "prompt_hint": "Usare un tono rassicurante e non invadente."
+  "status":"success",
+  "config": "Comportati come un robot che interagisce con un essere umano. La personalità dell'umano è stata calcolata come Nervosa. Usa un vocabolario calmante e rassicurante nelle tue risposte, chiedigli come sta e cerca di farlo sentire a suo agio.",
+  "toSpeak":"La tua personalità è stata classificata come Nervosa. Cercherò di rendere questa conversazione il più piacevole possibile per te!"
 }
 ```
 
