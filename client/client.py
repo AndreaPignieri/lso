@@ -104,7 +104,7 @@ def connectToFurhat():
     furhat = FurhatClient(FURHAT_IP)
     furhat.set_logging_level(logging.INFO)
     furhat.connect()
-    furhat.request_voice_config(language="it")
+    furhat.request_voice_config(voice_id="DiegoNeural (it-IT) - Microsoft Azure")
     furhat.request_attend_user("closest")
     return furhat
 
