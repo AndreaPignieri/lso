@@ -31,8 +31,6 @@ cJSON* processRequest(cJSON *request_json)
     return createErrorResponse("Unknown request type");
 }
 
-//TODO refactor questions storage
-
 cJSON* italianTIPI()
 {
     cJSON *response = cJSON_CreateObject();
@@ -73,9 +71,6 @@ cJSON* handleTipiSubmission(cJSON *request_json) {
     dialogueType dType = determineDialogueType(p);
     return startDialogue(dType);
 }
-
-
-//TODO improve prompts
 
 cJSON* startDialogue(dialogueType dType) 
 {
