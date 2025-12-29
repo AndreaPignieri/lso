@@ -30,7 +30,7 @@ def main():
 
         print("--- Avvio Assistente ---")
         assistant = Assistant(mode="persona", personality=response.get("config", {}))
-        furhat.request_speak_text(response.get("toSpeak", "Iniziamo la conversazione."))
+        furhat.request_speak_text(response.get("toSpeak", "Iniziamo la conversazione.  C'è qualcosa di cui vorresti parlare?"))
 
         while True:
             userInput = furhat.request_listen_start()
@@ -50,7 +50,7 @@ def main():
                 furhat.request_speak_text(textToSpeak)
                 if gestureToPerform and gestureToPerform != "None":
                     try:
-                        furhat.request_gesture(gestureToPerform)
+                        furhat.request_gesture_start(gestureToPerform)
                     except Exception as e:
                         print(f"Gesto fallito: {e}")
 

@@ -40,17 +40,17 @@ cJSON* italianTIPI()
     
     cJSON *questions = cJSON_AddArrayToObject(response, "questions");
     
-    cJSON_AddItemToArray(questions, cJSON_CreateString("1. Sono una persona estroversa, esuberante."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("2. Sono una persona polemica, litigiosa."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("3. Sono una persona affidabile, auto-disciplinata."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("4. Sono una persona ansiosa, che si agita facilmente."));
+    cJSON_AddItemToArray(questions, cJSON_CreateString("Sono una persona estroversa, esuberante."));
+    cJSON_AddItemToArray(questions, cJSON_CreateString("Sono una persona polemica, litigiosa."));
+    cJSON_AddItemToArray(questions, cJSON_CreateString("Sono una persona affidabile, auto-disciplinata."));
+    cJSON_AddItemToArray(questions, cJSON_CreateString("Sono una persona ansiosa, che si agita facilmente."));
     cJSON_AddItemToArray(questions, cJSON_CreateString("5. Sono una persona aperta alle nuove esperienze, con molti interessi."));
     
-    cJSON_AddItemToArray(questions, cJSON_CreateString("6. Sono una persona riservata, silenziosa.")); 
-    cJSON_AddItemToArray(questions, cJSON_CreateString("7. Sono una persona comprensiva, affettuosa."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("8. Sono una persona disorganizzata, distratta."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("9. Sono una persona tranquilla, emotivamente stabile."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("10. Sono una persona tradizionalista, abitudinaria."));
+    cJSON_AddItemToArray(questions, cJSON_CreateString("Sono una persona riservata, silenziosa.")); 
+    cJSON_AddItemToArray(questions, cJSON_CreateString("Sono una persona comprensiva, affettuosa."));
+    cJSON_AddItemToArray(questions, cJSON_CreateString("Sono una persona disorganizzata, distratta."));
+    cJSON_AddItemToArray(questions, cJSON_CreateString("Sono una persona tranquilla, emotivamente stabile."));
+    cJSON_AddItemToArray(questions, cJSON_CreateString("Sono una persona tradizionalista, abitudinaria."));
     
     return response;
 }
