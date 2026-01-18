@@ -5,6 +5,7 @@
 #include "jsonUtils.h"
 #include "tipi.h" 
 #include "errors.h"
+#include "strings.h"
 
 
 cJSON* createErrorResponse(const char* message) 
@@ -36,21 +37,21 @@ cJSON* italianTIPI()
     cJSON *response = cJSON_CreateObject();
     
     cJSON_AddStringToObject(response, "status", "success");
-    cJSON_AddStringToObject(response, "message", "Adesso ti farò delle domande per valutare la tua personalità : rispondi alle 10 domande con un punteggio da 1 a 7, dove 1 significa 'fortemente in disaccordo' e 7 significa 'fortemente d'accordo'.");
+    cJSON_AddStringToObject(response, "message", MSG_TIPI_INTRO);
     
     cJSON *questions = cJSON_AddArrayToObject(response, "questions");
     
-    cJSON_AddItemToArray(questions, cJSON_CreateString("Sono una persona estroversa, esuberante."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("Sono una persona polemica, litigiosa."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("Sono una persona affidabile, auto-disciplinata."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("Sono una persona ansiosa, che si agita facilmente."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("5. Sono una persona aperta alle nuove esperienze, con molti interessi."));
+    cJSON_AddItemToArray(questions, cJSON_CreateString(QUEST_1));
+    cJSON_AddItemToArray(questions, cJSON_CreateString(QUEST_2));
+    cJSON_AddItemToArray(questions, cJSON_CreateString(QUEST_3));
+    cJSON_AddItemToArray(questions, cJSON_CreateString(QUEST_4));
+    cJSON_AddItemToArray(questions, cJSON_CreateString(QUEST_5));
     
-    cJSON_AddItemToArray(questions, cJSON_CreateString("Sono una persona riservata, silenziosa.")); 
-    cJSON_AddItemToArray(questions, cJSON_CreateString("Sono una persona comprensiva, affettuosa."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("Sono una persona disorganizzata, distratta."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("Sono una persona tranquilla, emotivamente stabile."));
-    cJSON_AddItemToArray(questions, cJSON_CreateString("Sono una persona tradizionalista, abitudinaria."));
+    cJSON_AddItemToArray(questions, cJSON_CreateString(QUEST_6)); 
+    cJSON_AddItemToArray(questions, cJSON_CreateString(QUEST_7));
+    cJSON_AddItemToArray(questions, cJSON_CreateString(QUEST_8));
+    cJSON_AddItemToArray(questions, cJSON_CreateString(QUEST_9));
+    cJSON_AddItemToArray(questions, cJSON_CreateString(QUEST_10));
     
     return response;
 }
@@ -79,33 +80,33 @@ cJSON* startDialogue(dialogueType dType)
     {
         case NERVOUS:
             cJSON_AddStringToObject(response, "status", "success");
-            cJSON_AddStringToObject(response, "config", "Comportati come un robot che interagisce con un essere umano. La personalità dell'umano è stata calcolata come Nervosa. Usa un vocabolario calmante e rassicurante nelle tue risposte, chiedigli come sta e cerca di farlo sentire a suo agio.");
-            cJSON_AddStringToObject(response, "toSpeak", "La tua personalità è stata classificata come Nervosa. Cercherò di rendere questa conversazione il più piacevole possibile per te!");
+            cJSON_AddStringToObject(response, "config", CFG_NERVOUS);
+            cJSON_AddStringToObject(response, "toSpeak", SPK_NERVOUS);
             break;
         case OPEN:
             cJSON_AddStringToObject(response, "status", "success");
-            cJSON_AddStringToObject(response, "config", "Comportati come un robot che interagisce con un essere umano. La personalità dell'umano è stata calcolata come Aperta. Usa un vocabolario entusiasta e coinvolgente nelle tue risposte, chiedigli dei suoi interessi e cerca di stimolare una conversazione aperta.");
-            cJSON_AddStringToObject(response, "toSpeak", "La tua personalità è stata classificata come Aperta. Non vedo l'ora di conoscere i tuoi interessi!");
+            cJSON_AddStringToObject(response, "config", CFG_OPEN);
+            cJSON_AddStringToObject(response, "toSpeak", SPK_OPEN);
             break;
         case RELAXED:
             cJSON_AddStringToObject(response, "status", "success");
-            cJSON_AddStringToObject(response, "config", "Comportati come un robot che interagisce con un essere umano. La personalità dell'umano è stata calcolata come Rilassata. Usa un vocabolario amichevole e facile da gestire nelle tue risposte, mantieni la conversazione leggera e piacevole.");
-            cJSON_AddStringToObject(response, "toSpeak", "La tua personalità è stata classificata come Rilassata. Cercherò di rendere questa conversazione il più piacevole possibile per te!");
+            cJSON_AddStringToObject(response, "config", CFG_RELAXED);
+            cJSON_AddStringToObject(response, "toSpeak", SPK_RELAXED);
             break;
         case SERIOUS:
             cJSON_AddStringToObject(response, "status", "success");
-            cJSON_AddStringToObject(response, "config", "Comportati come un robot che interagisce con un essere umano. La personalità dell'umano è stata calcolata come Seria. Usa un vocabolario formale e rispettoso nelle tue risposte, concentra l'attenzione su argomenti significativi e evita chiacchere.");
-            cJSON_AddStringToObject(response, "toSpeak", "La tua personalità è stata classificata come Seria. Cercherò di rendere questa conversazione il più piacevole possibile per te!");
+            cJSON_AddStringToObject(response, "config", CFG_SERIOUS);
+            cJSON_AddStringToObject(response, "toSpeak", SPK_SERIOUS);
             break;
         case TIMID:
             cJSON_AddStringToObject(response, "status", "success");
-            cJSON_AddStringToObject(response, "config", "Comportati come un robot che interagisce con un essere umano. La personalità dell'umano è stata calcolata come Timida. Usa un vocabolario gentile e incoraggiante nelle tue risposte, fai domande aperte e cerca di costruire la sua fiducia.");
-            cJSON_AddStringToObject(response, "toSpeak", "La tua personalità è stata classificata come Timida. Cercherò di rendere questa conversazione il più piacevole possibile per te!");
+            cJSON_AddStringToObject(response, "config", CFG_TIMID);
+            cJSON_AddStringToObject(response, "toSpeak", SPK_TIMID);
             break;
         case NEUTRAL:
             cJSON_AddStringToObject(response, "status", "success");
-            cJSON_AddStringToObject(response, "config", "Comportati come un robot che interagisce con un essere umano. La personalità dell'umano è stata calcolata come Neutra. Usa un vocabolario bilanciato e adattabile nelle tue risposte, adatta il tuo tono in base al flusso della conversazione.");
-            cJSON_AddStringToObject(response, "toSpeak", "La tua personalità è stata classificata come Neutra. Cercherò di rendere questa conversazione il più piacevole possibile per te!");
+            cJSON_AddStringToObject(response, "config", CFG_NEUTRAL);
+            cJSON_AddStringToObject(response, "toSpeak", SPK_NEUTRAL);
             break;
         default:
             createErrorResponse("Unknown dialogue type");
