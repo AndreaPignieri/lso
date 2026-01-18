@@ -12,25 +12,19 @@ SERVER_PORT = int(os.getenv("SERVER_PORT", 8080))
 def main():
     furhat = None
     try:
-        print(f"--- Tentativo di connessione a Furhat su {FURHAT_IP} ---")
         furhat = connectToFurhat()
-        print("--- Connessione a Furhat riuscita! ---")
 
         goodMorning(furhat)
 
-        print("--- Richiesta domande al server locale... ---")
         request = getQuestions()
         response = connectAndSend(request)
         
-        print("--- Inizio intervista TIPI ---")
         request = askTipi(furhat, response)
         
-        print("--- Invio risultati al server... ---")
         response = connectAndSend(request)
 
-        print("--- Avvio Assistente ---")
         assistant = Assistant(mode="persona", personality=response.get("config", {}))
-        furhat.request_speak_text(response.get("toSpeak", "Iniziamo la conversazione.  C'è qualcosa di cui vorresti parlare?"))
+        furhat.request_speak_text(response.get("toSpeak", "Iniziamo la conversazione, in qualunque momento tu voglia terminarla, basta che tu lo dica. C'è qualcosa di cui vorresti parlare?"))
 
         while True:
             userInput = furhat.request_listen_start()
@@ -55,11 +49,9 @@ def main():
                         print(f"Gesto fallito: {e}")
 
     except Exception as e:
-        print(f"Dettaglio errore: {e}")
         furhat.request_speak_text("Mi dispiace, si è verificato un errore. Termino il programma.")
     finally:
         furhatShutdown(furhat)
-        print("Programma terminato.")
 
 def furhatShutdown(furhat):
     """Chiude la connessione con il robot in modo sicuro."""
@@ -67,7 +59,6 @@ def furhatShutdown(furhat):
         try:
             furhat.request_speak_text("Sto chiudendo la connessione. A presto!")
             furhat.disconnect()
-            print("Disconnessione da Furhat completata.")
         except:
             pass
 
